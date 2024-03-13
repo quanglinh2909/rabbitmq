@@ -10,11 +10,10 @@ connection_parameters = pika.ConnectionParameters('localhost')
 connection = pika.BlockingConnection(connection_parameters)
 
 channel = connection.channel()
-channel.exchange_declare(exchange='routing', exchange_type=ExchangeType.direct)
+channel.exchange_declare(exchange='my_topic_exchange', exchange_type=ExchangeType.topic)
 
 queue = channel.queue_declare(queue='', exclusive=True)
-channel.queue_bind(exchange='routing', queue=queue.method.queue, routing_key='payments_only')
-channel.queue_bind(exchange='routing', queue=queue.method.queue, routing_key='both')
+channel.queue_bind(exchange='my_topic_exchange', queue=queue.method.queue, routing_key='#.payments')
 
 channel.basic_consume(queue=queue.method.queue, on_message_callback=on_message_received, auto_ack=True)
 
